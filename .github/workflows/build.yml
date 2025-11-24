@@ -51,7 +51,7 @@ jobs:
       run: |
         if (Test-Path "dist/mitake_printer.exe") {
           Write-Host "✅ EXE créé avec succès!"
-          ls -lh dist/mitake_printer.exe
+          Get-ChildItem dist/mitake_printer.exe
         } else {
           Write-Host "❌ Erreur: l'EXE n'a pas été créé"
           exit 1
@@ -79,7 +79,7 @@ jobs:
         Compress-Archive -Path * -DestinationPath ../mitake_printer_windows.zip
         cd ..
         Write-Host "✅ ZIP créé"
-        ls -lh mitake_printer_windows.zip
+        Get-ChildItem mitake_printer_windows_bundle.zip
     
     # 8. Upload l'executable comme artifact (court terme)
     - name: Upload EXE artifact
