@@ -78,7 +78,7 @@ jobs:
         Compress-Archive -Path * -DestinationPath ../mitake_printer_windows.zip
         cd ..
         Write-Host "✅ ZIP créé"
-        Get-ChildItem mitake_printer_windows_bundle.zip
+        Get-ChildItem mitake_printer_windows.zip
     
     # 8. Upload l'executable comme artifact (court terme)
     - name: Upload EXE artifact
