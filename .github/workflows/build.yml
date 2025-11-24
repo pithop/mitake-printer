@@ -32,17 +32,6 @@ jobs:
         pyinstaller --onefile `
           --name mitake_printer `
           --add-data ".env.example;." `
-          --icon=icon.ico `
-          --console `
-          printer_agent.py
-      continue-on-error: true  # Continue même si icon.ico n'existe pas
-    
-    # 4b. Alternative si la commande ci-dessus échoue (sans icône ni données)
-    - name: Build executable (fallback)
-      if: failure()
-      run: |
-        pyinstaller --onefile `
-          --name mitake_printer `
           --console `
           printer_agent.py
     
