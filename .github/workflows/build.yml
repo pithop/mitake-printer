@@ -83,7 +83,7 @@ jobs:
     
     # 8. Upload l'executable comme artifact (court terme)
     - name: Upload EXE artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: mitake_printer_exe
         path: dist/mitake_printer.exe
@@ -91,7 +91,7 @@ jobs:
     
     # 9. Upload le ZIP complet comme artifact
     - name: Upload ZIP artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: mitake_printer_windows_bundle
         path: mitake_printer_windows.zip
