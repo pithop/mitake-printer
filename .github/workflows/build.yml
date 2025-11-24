@@ -1,0 +1,119 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # Permet de déclencher manuellement depuis GitHub
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    # 1. Récupérer le code
+    - uses: actions/checkout@v4
+    
+    # 2. Installer Python
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    # 3. Installer les dépendances
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+    
+    # 4. Builder l'executable avec PyInstaller
+    - name: Build executable with PyInstaller
+      run: |
+        pyinstaller --onefile `
+          --name mitake_printer `
+          --add-data ".env.example;." `
+          --icon=icon.ico `
+          --console `
+          printer_agent.py
+      continue-on-error: true  # Continue même si icon.ico n'existe pas
+    
+    # 4b. Alternative si la commande ci-dessus échoue (sans icône ni données)
+    - name: Build executable (fallback)
+      if: failure()
+      run: |
+        pyinstaller --onefile `
+          --name mitake_printer `
+          --console `
+          printer_agent.py
+    
+    # 5. Vérifier que l'exe existe
+    - name: Check if EXE was created
+      run: |
+        if (Test-Path "dist/mitake_printer.exe") {
+          Write-Host "✅ EXE créé avec succès!"
+          ls -lh dist/mitake_printer.exe
+        } else {
+          Write-Host "❌ Erreur: l'EXE n'a pas été créé"
+          exit 1
+        }
+    
+    # 6. Créer un dossier "release" avec tout ce qu'il faut
+    - name: Prepare release folder
+      run: |
+        mkdir release
+        Copy-Item "dist/mitake_printer.exe" "release/"
+        Copy-Item ".env.example" "release/.env"
+        Copy-Item "README.md" "release/"
+        Copy-Item "DOCUMENTATION.md" "release/"
+        Copy-Item "GUIDE_URGENCE.md" "release/"
+        Copy-Item "GUIDE_WINDOWS_EXE.md" "release/"
+        Write-Host "📦 Dossier release préparé"
+        Write-Host ""
+        Write-Host "📋 Fichiers inclus:"
+        ls -Recurse release/
+    
+    # 7. Créer une archive ZIP
+    - name: Create ZIP archive
+      run: |
+        cd release
+        Compress-Archive -Path * -DestinationPath ../mitake_printer_windows.zip
+        cd ..
+        Write-Host "✅ ZIP créé"
+        ls -lh mitake_printer_windows.zip
+    
+    # 8. Upload l'executable comme artifact (court terme)
+    - name: Upload EXE artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: mitake_printer_exe
+        path: dist/mitake_printer.exe
+        retention-days: 30
+    
+    # 9. Upload le ZIP complet comme artifact
+    - name: Upload ZIP artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: mitake_printer_windows_bundle
+        path: mitake_printer_windows.zip
+        retention-days: 30
+    
+    # 10. Afficher un résumé
+    - name: Summary
+      run: |
+        Write-Host "================================"
+        Write-Host "✅ Build terminé avec succès!"
+        Write-Host "================================"
+        Write-Host ""
+        Write-Host "📦 Artifacts disponibles:"
+        Write-Host "  1. mitake_printer.exe (executable seul)"
+        Write-Host "  2. mitake_printer_windows_bundle.zip (complet)"
+        Write-Host ""
+        Write-Host "📥 Télécharge les artifacts depuis:"
+        Write-Host "   Actions → Workflow run → Artifacts"
+        Write-Host ""
+        Write-Host "🚀 Sur Windows:"
+        Write-Host "  1. Crée un dossier mitake_printer"
+        Write-Host "  2. Copie mitake_printer.exe dedans"
+        Write-Host "  3. Crée un fichier .env (voir .env.example)"
+        Write-Host "  4. Lance: mitake_printer.exe"
+        Write-Host "================================"

@@ -1,0 +1,77 @@
+# ============================================================================
+# DÉPENDANCES - Middleware d'Impression Restaurant MITAKE
+# ============================================================================
+
+# Supabase (Base de données et Realtime)
+# Versions pinées pour éviter conflicts gotrue/httpx
+supabase>=2.0,<3.0
+postgrest>=0.10,<1.0
+realtime>=1.0,<2.0
+gotrue>=2.0,<3.0
+httpx>=0.27.0,<0.28.0
+
+# Gestion des imprimantes ESC/POS
+# Librairie ESC/POS. Version 3.1 est la dernière stable (3.0.1 n'existe pas sur PyPI)
+# Si vous êtes uniquement en mode MOCK (PRINTER_MODE=mock), vous pouvez commenter cette ligne.
+python-escpos==3.1
+
+# Communication USB (Optionnel - uniquement pour imprimantes USB)
+pyusb==1.2.1
+
+# Windows Printing Support (Uniquement sur Windows)
+# Décommenter ces lignes si vous êtes sur Windows:
+# pywin32==306
+
+# Utilitaires
+python-dotenv==1.0.0
+pyinstaller
+
+# ============================================================================
+# NOTES D'INSTALLATION
+# ============================================================================
+#
+# INSTALLATION STANDARD:
+# ----------------------
+# pip install -r requirements.txt
+#
+#
+# SUR WINDOWS 11 (Configuration recommandée):
+# -------------------------------------------
+# 1. Installer Python 3.10+ depuis python.org
+# 2. Ouvrir PowerShell en Administrateur
+# 3. Exécuter: pip install -r requirements.txt
+# 4. Installer pywin32: pip install pywin32
+#
+#
+# PILOTES IMPRIMANTES EPSON:
+# --------------------------
+# - Télécharger et installer les pilotes officiels Epson depuis:
+#   https://epson.com/Support/Printers/
+# - Rechercher votre modèle d'imprimante thermique
+# - Installer les pilotes "Advanced Printer Driver" ou "TM Utility"
+#
+#
+# CONFIGURATION USB (Si connexion USB):
+# -------------------------------------
+# Windows détecte automatiquement les imprimantes USB.
+# Pour identifier les VID/PID:
+# 1. Gestionnaire de périphériques
+# 2. Propriétés de l'imprimante > Détails > ID matériel
+# 3. Noter VID_XXXX&PID_YYYY
+#
+#
+# CONFIGURATION RÉSEAU (Si connexion IP):
+# ---------------------------------------
+# 1. Configurer une IP statique sur l'imprimante via son panneau
+# 2. Tester la connexion: ping 192.168.1.100
+# 3. Port standard ESC/POS: 9100
+#
+#
+# DÉPANNAGE:
+# ----------
+# - Erreur "Could not find libusb": Installer libusb-win32
+#   https://sourceforge.net/projects/libusb-win32/
+#
+# - Erreur Win32 API: pip install --upgrade pywin32
+#   Puis exécuter: python Scripts/pywin32_postinstall.py -install
+#

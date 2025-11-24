@@ -1,0 +1,104 @@
+# ============================================================================
+# .gitignore - MITAKE Print Middleware
+# ============================================================================
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+.env
+.env.local
+.env.*.local
+
+# IDE & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# PyInstaller (Build artifacts)
+build/
+dist/
+*.manifest
+*.spec
+mitake_printer.exe
+mitake_printer.spec
+
+# Logs
+*.log
+printer_agent.log
+logs/
+*.log.*
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+ticket_test.txt
+*.pid
+
+# OS
+.DS_Store
+Thumbs.db
+.vscode/settings.json
+
+# GitHub Actions
+.github/workflows/*.log
+
+# Keep only essential files in repo
+# ============================================================================
+# IMPORTANT: These files SHOULD be committed to git
+# ============================================================================
+# ✅ printer_agent.py
+# ✅ requirements.txt
+# ✅ .env.example (NOT .env with credentials!)
+# ✅ .github/workflows/build.yml
+# ✅ README.md
+# ✅ DOCUMENTATION.md
+# ✅ .gitignore (this file)
+
+# ✅ OPTIONAL (Testing & Examples)
+# ✅ test_setup.py
+# ✅ test_printers.py
+# ✅ test_insert.js
