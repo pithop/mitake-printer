@@ -60,9 +60,9 @@ jobs:
         echo "PRINTER_CASHIER_NAME=Microsoft Print to PDF" >> dist/.env
         echo "PRINTER_KITCHEN_NAME=Microsoft Print to PDF" >> dist/.env
         
-        # 2. Lancer l'EXE en arrière-plan
+        # 2. Lancer l'EXE en arrière-plan avec redirection des logs système (stdout/stderr)
         cd dist
-        $p = Start-Process -FilePath "mitake_printer.exe" -PassThru
+        $p = Start-Process -FilePath "mitake_printer.exe" -RedirectStandardOutput "startup_log.txt" -RedirectStandardError "startup_log.txt" -PassThru
         
         # 3. Attendre 10 secondes
         Write-Host "⏳ Attente de 10 secondes..."
@@ -75,17 +75,24 @@ jobs:
         } else {
             Write-Host "❌ ÉCHEC: L'application s'est arrêtée immédiatement (Crash)."
             Write-Host "Code de sortie: $($p.ExitCode)"
-            # On ne fait pas échouer le build ici pour pouvoir lire les logs, mais on le note
         }
         
-        # 5. Afficher les logs
+        # 5. Afficher les logs système (stdout/stderr) - CRUCIAL pour voir les erreurs de démarrage
+        if (Test-Path "startup_log.txt") {
+            Write-Host "📄 CONTENU DU LOG SYSTÈME (STDOUT/STDERR):"
+            Write-Host "--------------------------------------------------"
+            Get-Content "startup_log.txt"
+            Write-Host "--------------------------------------------------"
+        } else {
+            Write-Host "⚠️ Pas de fichier log système trouvé."
+        }
+
+        # 6. Afficher les logs applicatifs (si existants)
         if (Test-Path "printer_agent.log") {
-            Write-Host "📄 CONTENU DU LOG:"
+            Write-Host "📄 CONTENU DU LOG APPLICATIF:"
             Write-Host "--------------------------------------------------"
             Get-Content "printer_agent.log"
             Write-Host "--------------------------------------------------"
-        } else {
-            Write-Host "⚠️ Pas de fichier log trouvé."
         }
         cd ..
     
