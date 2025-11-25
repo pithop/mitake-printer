@@ -99,26 +99,34 @@ class Config:
     #    → VID = Vendor ID (0x04b8 pour Epson)
     #    → PID = Product ID (varie selon le modèle)
     
+    # Mode d'impression: 'real' (défaut) ou 'mock'
+    PRINTER_MODE = os.getenv("PRINTER_MODE", "normal").lower()
+    if PRINTER_MODE == 'real':
+        PRINTER_MODE = 'normal'
+
+    # DÉTECTION OS WINDOWS
+    IS_WINDOWS = (os.name == 'nt')
+
     # Imprimante CAISSE (Ticket client avec prix)
     PRINTER_CASHIER = {
-        "type": os.getenv("PRINTER_CASHIER_TYPE", "network"),  # Options: "usb", "network", "windows"
-        "name": os.getenv("PRINTER_CASHIER_NAME", "Epson_Caisse"),  # Nom Windows ou descriptif
-        # Pour USB:
+        # Sur Windows, on force le type 'windows' sauf si on est en mode mock
+        "type": "windows" if IS_WINDOWS else os.getenv("PRINTER_CASHIER_TYPE", "network"),
+        # Nom exact Windows requis
+        "name": os.getenv("PRINTER_CASHIER_NAME", "EPSON TM-T20IV"),
+        # Fallback Network/USB (non utilisé si Windows détecté)
         "vendor_id": int(os.getenv("PRINTER_CASHIER_VID", "0x04b8"), 16) if os.getenv("PRINTER_CASHIER_VID") else 0x04b8,
         "product_id": int(os.getenv("PRINTER_CASHIER_PID", "0x0e28"), 16) if os.getenv("PRINTER_CASHIER_PID") else 0x0e28,
-        # Pour Network:
         "ip": os.getenv("PRINTER_CASHIER_IP", "192.168.1.100"),
         "port": int(os.getenv("PRINTER_CASHIER_PORT", "9100")),
     }
     
     # Imprimante CUISINE (Ticket cuisine sans prix)
     PRINTER_KITCHEN = {
-        "type": os.getenv("PRINTER_KITCHEN_TYPE", "network"),  # Options: "usb", "network", "windows"
-        "name": os.getenv("PRINTER_KITCHEN_NAME", "Epson_Cuisine"),
-        # Pour USB:
+        "type": "windows" if IS_WINDOWS else os.getenv("PRINTER_KITCHEN_TYPE", "network"),
+        # Nom exact Windows pour la 2ème imprimante
+        "name": os.getenv("PRINTER_KITCHEN_NAME", "EPSON TM-T20IV Receipt (1)"),
         "vendor_id": int(os.getenv("PRINTER_KITCHEN_VID", "0x04b8"), 16) if os.getenv("PRINTER_KITCHEN_VID") else 0x04b8,
         "product_id": int(os.getenv("PRINTER_KITCHEN_PID", "0x0e29"), 16) if os.getenv("PRINTER_KITCHEN_PID") else 0x0e29,
-        # Pour Network:
         "ip": os.getenv("PRINTER_KITCHEN_IP", "192.168.1.101"),
         "port": int(os.getenv("PRINTER_KITCHEN_PORT", "9100")),
     }
@@ -130,12 +138,6 @@ class Config:
     
     # Caractères pour la mise en page
     PAPER_WIDTH = 48  # Nombre de caractères (80mm ≈ 48 chars)
-    
-    # Mode d'impression: 'real' (défaut) ou 'mock'
-    PRINTER_MODE = os.getenv("PRINTER_MODE", "normal").lower()
-    # Compatibilité: si quelqu'un met 'real', on le traite comme 'normal'
-    if PRINTER_MODE == 'real':
-        PRINTER_MODE = 'normal'
 
 
 # ============================================================================
@@ -261,6 +263,19 @@ if os.path.exists(ENV_FILE):
     logger.info(f"✅ Fichier .env trouvé et chargé")
 else:
     logger.warning(f"⚠️  Fichier .env non trouvé - utilisation des variables d'environnement ou defaults")
+
+# Listage des imprimantes Windows au démarrage pour débogage
+if WINDOWS_PRINTING:
+    try:
+        logger.info("🖨️  LISTE DES IMPRIMANTES WINDOWS DÉTECTÉES:")
+        printers = win32print.EnumPrinters(win32print.PRINTER_ENUM_LOCAL | win32print.PRINTER_ENUM_CONNECTIONS)
+        for p in printers:
+            # p est un tuple (flags, description, name, comment)
+            # On affiche le nom (index 2) qui est celui à utiliser dans la config
+            logger.info(f"   🔹 Nom: '{p[2]}'")
+    except Exception as e:
+        logger.error(f"❌ Impossible de lister les imprimantes: {e}")
+
 logger.info("=" * 70)
 
 

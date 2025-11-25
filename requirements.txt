@@ -20,7 +20,7 @@ pyusb==1.2.1
 
 # Windows Printing Support (Uniquement sur Windows)
 # Décommenter ces lignes si vous êtes sur Windows:
-# pywin32==306
+pywin32==306
 
 # Utilitaires
 python-dotenv==1.0.0

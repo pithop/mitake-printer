@@ -31,6 +31,8 @@ jobs:
       run: |
         pyinstaller --onefile `
           --name mitake_printer `
+          --hidden-import win32print `
+          --hidden-import win32api `
           --add-data ".env.example;." `
           --console `
           printer_agent.py
