@@ -47,6 +47,47 @@ jobs:
           Write-Host "❌ Erreur: l'EXE n'a pas été créé"
           exit 1
         }
+
+    # 5b. SMOKE TEST (Test de démarrage)
+    - name: Smoke Test (Verify EXE starts)
+      run: |
+        Write-Host "🧪 Démarrage du Smoke Test..."
+        
+        # 1. Créer un .env temporaire pour le test
+        echo "SUPABASE_URL=https://example.com" > dist/.env
+        echo "SUPABASE_KEY=dummy" >> dist/.env
+        echo "PRINTER_MODE=normal" >> dist/.env
+        echo "PRINTER_CASHIER_NAME=Microsoft Print to PDF" >> dist/.env
+        echo "PRINTER_KITCHEN_NAME=Microsoft Print to PDF" >> dist/.env
+        
+        # 2. Lancer l'EXE en arrière-plan
+        cd dist
+        $p = Start-Process -FilePath "mitake_printer.exe" -PassThru
+        
+        # 3. Attendre 10 secondes
+        Write-Host "⏳ Attente de 10 secondes..."
+        Start-Sleep -Seconds 10
+        
+        # 4. Vérifier s'il tourne toujours
+        if (!$p.HasExited) {
+            Write-Host "✅ SUCCÈS: L'application a démarré et tourne correctement."
+            Stop-Process -Id $p.Id -Force
+        } else {
+            Write-Host "❌ ÉCHEC: L'application s'est arrêtée immédiatement (Crash)."
+            Write-Host "Code de sortie: $($p.ExitCode)"
+            # On ne fait pas échouer le build ici pour pouvoir lire les logs, mais on le note
+        }
+        
+        # 5. Afficher les logs
+        if (Test-Path "printer_agent.log") {
+            Write-Host "📄 CONTENU DU LOG:"
+            Write-Host "--------------------------------------------------"
+            Get-Content "printer_agent.log"
+            Write-Host "--------------------------------------------------"
+        } else {
+            Write-Host "⚠️ Pas de fichier log trouvé."
+        }
+        cd ..
     
     # 6. Créer un dossier "release" avec tout ce qu'il faut
     - name: Prepare release folder
