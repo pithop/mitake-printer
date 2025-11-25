@@ -62,7 +62,7 @@ jobs:
         
         # 2. Lancer l'EXE en arrière-plan avec redirection des logs système (stdout/stderr)
         cd dist
-        $p = Start-Process -FilePath "mitake_printer.exe" -RedirectStandardOutput "startup_log.txt" -RedirectStandardError "startup_log.txt" -PassThru
+        $p = Start-Process -FilePath "mitake_printer.exe" -RedirectStandardOutput "startup_stdout.txt" -RedirectStandardError "startup_stderr.txt" -PassThru
         
         # 3. Attendre 10 secondes
         Write-Host "⏳ Attente de 10 secondes..."
@@ -77,17 +77,23 @@ jobs:
             Write-Host "Code de sortie: $($p.ExitCode)"
         }
         
-        # 5. Afficher les logs système (stdout/stderr) - CRUCIAL pour voir les erreurs de démarrage
-        if (Test-Path "startup_log.txt") {
-            Write-Host "📄 CONTENU DU LOG SYSTÈME (STDOUT/STDERR):"
+        # 5. Afficher les logs système (stdout)
+        if (Test-Path "startup_stdout.txt") {
+            Write-Host "📄 STDOUT:"
             Write-Host "--------------------------------------------------"
-            Get-Content "startup_log.txt"
+            Get-Content "startup_stdout.txt"
             Write-Host "--------------------------------------------------"
-        } else {
-            Write-Host "⚠️ Pas de fichier log système trouvé."
         }
 
-        # 6. Afficher les logs applicatifs (si existants)
+        # 6. Afficher les logs système (stderr)
+        if (Test-Path "startup_stderr.txt") {
+            Write-Host "📄 STDERR:"
+            Write-Host "--------------------------------------------------"
+            Get-Content "startup_stderr.txt"
+            Write-Host "--------------------------------------------------"
+        }
+
+        # 7. Afficher les logs applicatifs (si existants)
         if (Test-Path "printer_agent.log") {
             Write-Host "📄 CONTENU DU LOG APPLICATIF:"
             Write-Host "--------------------------------------------------"
