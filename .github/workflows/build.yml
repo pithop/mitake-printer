@@ -62,7 +62,8 @@ jobs:
         
         # 2. Lancer l'EXE en arrière-plan avec redirection des logs système (stdout/stderr)
         cd dist
-        $p = Start-Process -FilePath "mitake_printer.exe" -RedirectStandardOutput "startup_stdout.txt" -RedirectStandardError "startup_stderr.txt" -PassThru
+        ls  # Debug: vérifier que le fichier est bien là
+        $p = Start-Process -FilePath ".\mitake_printer.exe" -RedirectStandardOutput "startup_stdout.txt" -RedirectStandardError "startup_stderr.txt" -PassThru
         
         # 3. Attendre 10 secondes
         Write-Host "⏳ Attente de 10 secondes..."
