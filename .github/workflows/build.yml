@@ -53,12 +53,12 @@ jobs:
       run: |
         Write-Host "🧪 Démarrage du Smoke Test..."
         
-        # 1. Créer un .env temporaire pour le test
-        echo "SUPABASE_URL=https://example.com" > dist/.env
-        echo "SUPABASE_KEY=dummy" >> dist/.env
-        echo "PRINTER_MODE=normal" >> dist/.env
-        echo "PRINTER_CASHIER_NAME=Microsoft Print to PDF" >> dist/.env
-        echo "PRINTER_KITCHEN_NAME=Microsoft Print to PDF" >> dist/.env
+        # 1. Copier le vrai .env.example (qui contient les clés Supabase valides)
+        Copy-Item ".env.example" "dist/.env"
+        
+        # 2. Ajouter la config imprimante pour le test (Microsoft Print to PDF existe toujours sur les runners GitHub)
+        Add-Content -Path "dist/.env" -Value "`nPRINTER_CASHIER_NAME=Microsoft Print to PDF"
+        Add-Content -Path "dist/.env" -Value "`nPRINTER_KITCHEN_NAME=Microsoft Print to PDF"
         
         # 2. Lancer l'EXE en arrière-plan avec redirection des logs système (stdout/stderr)
         cd dist
